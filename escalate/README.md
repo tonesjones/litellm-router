@@ -27,7 +27,8 @@ The setting lives in the agent file, not a config file, for a practical reason: 
 
 ## Guardrails
 
-- **The reviewer can't edit files.** Its only tools are `Read`, `Grep`, and `Glob`.
+- **The reviewer doesn't edit files.** It has `Read`, `Grep`, `Glob`, and `Bash`. `Bash` lets it run `git grep` and the failing test. The prompt limits it to read-only commands, but the tool list doesn't enforce that. If you need a hard guarantee, remove `Bash` from the `tools:` line.
+- **The reviewer searches before it reads.** Its first search lists only file names, with build, vendor, and dependency folders excluded. It reads line ranges of the files that match, and it widens the search only when the evidence points to another module. That keeps the strong model's tokens on diagnosis instead of on rereading the repo.
 - **There's no silent fallback.** If the reviewer model fails, the skill reports the error and stops. It doesn't try another model and doesn't answer the question itself.
 - **Low confidence goes back to you.** If the reviewer reports `Confidence: Low`, the worker doesn't act on the recommendation. It tells you what's still unknown, and you decide what to do next.
 - **There's one hop.** The flow is worker, then reviewer, then worker. A reviewer can't escalate to a stronger reviewer.
